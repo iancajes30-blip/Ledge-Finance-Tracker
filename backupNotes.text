@@ -1,0 +1,219 @@
+
+// Load the sidebar content from an external HTML file
+fetch("sidebar.html")
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("sidebar").innerHTML = data;
+    });
+
+
+
+// Transaction options
+const transactionTypes = [
+    "Income",
+    "Expenses",
+];
+
+// Get the select element
+const transactionSelect = document.getElementById("transaction-type");
+const expenseCategory = document.getElementById("expense-category");
+const incomeCategory = document.getElementById("income-category");
+
+// Loop through the array
+transactionTypes.forEach(type => {
+
+    // Create an option element
+    const option = document.createElement("option");
+
+    // Set the option value
+    option.value = type.toLowerCase();
+
+    // Set the visible text
+    option.textContent = type;
+
+    // Append option to select
+    transactionSelect.appendChild(option);
+
+});
+
+// Show/hide category select based on transaction type
+function updateCategorySelect() {
+    const selectedType = transactionSelect.value;
+
+    if (selectedType === "income") {
+        incomeCategory.style.display = "block";
+        expenseCategory.style.display = "none";
+    } else {
+        expenseCategory.style.display = "block";
+        incomeCategory.style.display = "none";
+    }
+}
+
+transactionSelect.addEventListener("change", updateCategorySelect);
+
+updateCategorySelect();
+
+
+// Expense categories
+const expenseCategories = [
+    "Food",
+    "Transport",
+    "Housing",
+    "Bills",
+    "Shopping",
+    "Health",
+    "Fun",
+    "Other"
+];
+
+// Income categories
+const incomeCategories = [
+    "Salary",
+    "Business",
+    "Investments",
+    "Gifts",
+    "Side Hustle",
+    "Other"
+];
+
+// Get the select element
+const expenseSelect = document.getElementById("expense-category");
+const incomeSelect = document.getElementById("income-category");
+
+// Loop through the array for expense categories
+expenseCategories.forEach(category => {
+
+    // Create an option element
+    const option = document.createElement("option");
+
+    // Set the option value
+    option.value = category.toLowerCase();
+
+    // Set the visible text
+    option.textContent = category;
+
+    // Append option to select
+    expenseSelect.appendChild(option);
+
+});
+
+// Loop through the array for income categories
+incomeCategories.forEach(category => {
+
+    // Create an option element
+    const option = document.createElement("option");
+
+    // Set the option value
+    option.value = category.toLowerCase();
+
+    // Set the visible text
+    option.textContent = category;
+
+    // Append option to select
+    incomeSelect.appendChild(option);
+
+});
+
+// Custom date picker
+const formattedDate = document.getElementById("formatted-date");
+const datePicker = document.getElementById("date-picker");
+
+// Open date picker when clicking the visible input
+formattedDate.addEventListener("click", function () {
+    datePicker.showPicker();
+});
+
+// Format selected date
+datePicker.addEventListener("change", function () {
+
+    const selectedDate = new Date(this.value + "T00:00:00");
+
+    formattedDate.value = selectedDate.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+
+});
+
+
+// Handle form submission
+
+// Get form and input elements
+const transactionForm = document.getElementById("transaction-form");
+const descriptionInput = document.getElementById("description");
+const amountInput = document.getElementById("amount");
+const transactionTypeSelect = document.getElementById("transaction-type");
+const expenseCategorySelect = document.getElementById("expense-category");
+const incomeCategorySelect = document.getElementById("income-category");
+const dateInput = document.getElementById("date-picker");
+
+const transactionList = document.querySelector(".transaction-list");
+
+const transactions = [];
+
+// Get values after form submission
+transactionForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const description = descriptionInput.value.trim();
+    const amount = Number(amountInput.value.trim());
+    const transactionType = transactionTypeSelect.value;
+    const expenseCategory = expenseCategorySelect.value;
+    const incomeCategory = incomeCategorySelect.value;
+    const date = dateInput.value;
+
+    const transaction = {
+        description: description,
+        amount: amount,
+        transactionType: transactionType,
+        expenseCategory: expenseCategory,
+        incomeCategory: incomeCategory,
+        date: date
+    };
+
+    transactions.push(transaction);
+
+    displayTransactions();
+
+    transactionForm.reset();
+});
+
+
+// Display transactions in the transaction list
+function displayTransactions() {
+    transactionList.innerHTML = "";
+
+    transactions.forEach(transaction => {
+        const transactionItem = document.createElement("div");
+        transactionItem.classList.add("transaction-item");
+
+        const description = document.createElement("p");
+        description.textContent = `${transaction.description}`;
+
+        const amount = document.createElement("p");
+
+        amount.textContent = `${transaction.amount}`;
+
+        const transactionType = document.createElement("p");
+        transactionType.textContent = `${transaction.transactionType}`;
+
+        const incomeCategory = document.createElement("p");
+        incomeCategory.textContent = `${transaction.incomeCategory}`;
+        const expenseCategory = document.createElement("p");
+        expenseCategory.textContent = `${transaction.expenseCategory}`;
+
+        const date = document.createElement("p");
+        date.textContent = `${transaction.date}`;
+
+        transactionItem.appendChild(description);
+        transactionItem.appendChild(amount);
+        transactionItem.appendChild(transactionType);
+        transactionItem.appendChild(expenseCategory);
+        transactionItem.appendChild(incomeCategory);
+        transactionItem.appendChild(date);
+
+        transactionList.appendChild(transactionItem);
+    });
+}
+

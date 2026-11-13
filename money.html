@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div id="sidebar"></div>
+
+        <!-- Main Content -->
+        <main>
+            <header>
+                <div class="header-content">
+                    <h2>Money</h2>
+                    <p>Everything that comes in and goes out</p>
+                </div>
+            </header>
+
+            <section class="money-content">
+                <!-- Money content goes here -->
+                <h2 class="add-expenses">Add money in and out</h2>
+                <form class="money-input" id="transaction-form">
+                    <div class="money-filter">
+                        <select id="transaction-type" class="transaction-type" name="transaction-type" required>
+                        </select>
+
+                    </div>
+                    <input type="text" id="description" class="description" name="description"
+                        placeholder="What was it?" required>
+                    <input type="number" id="amount" class="amount" name="amount" placeholder="Amount" required min="0"
+                        step="0.01">
+                    <div class="money-filter">
+                        <select id="transaction-sub-category" class="transaction-type" name="transaction-sub-category"
+                            required>
+                        </select>
+
+                    </div>
+                    <input type="date" id="date-picker" class="date-picker" value="2023-10-27" name="formatted-date"
+                        required>
+                    <button type="submit" class="submit-btn" id="add-transaction">Add</button>
+                </form>
+            </section>
+
+            <section class="list-content">
+                <div class="transaction-list-header">
+                <div class="summary-section">
+                    <h2>History</h2>
+                    <div class="transaction-summary">
+
+                        <div class="summary-card">
+                            <p id="total-entries">0</p>
+                            <p>Entries</p>
+
+                        </div>
+
+                        <span>·</span>
+
+                        <div class="summary-card">
+                            <p>Income</p>
+                            <p id="total-income">₱0.00</p>
+                        </div>
+
+                        <span>·</span>
+
+                        <div class="summary-card">
+                            <p>Spent</p>
+                            <p id="total-spent">₱0.00</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <div class="filter-content">
+                    </div>
+                </div>
+                    </div>
+                <div class="transaction-list">
+                    <ul id="transactions">
+                        <div class="transaction-item">
+                        </div>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+    </div>
+    <script src="script.js"></script>
+
+</body>
+
+</html>

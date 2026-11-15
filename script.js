@@ -16,7 +16,7 @@ const transactionTypes = [
 
 // Get the select element
 const transactionSelect = document.getElementById("transaction-type");
-const transactionSubCategory = document.getElementById("transaction-sub-category");
+const transactionSubCategorySelect = document.getElementById("transaction-sub-category");
 
 
 // Loop through the array for transaction type
@@ -62,13 +62,13 @@ const incomeCategories = [
 
 // Loop through the array for transaction sub categories
 function updateCategorySelect() {
-    const selectedType = transactionSelect.value;
+    const currentFilter = transactionSelect.value;
 
     // Clear previously generated options
-    transactionSubCategory.innerHTML = "";
+    transactionSubCategorySelect.innerHTML = "";
 
     // Transaction condition depending on which transaction type
-    if (selectedType === "income") {
+    if (currentFilter === "income") {
 
         incomeCategories.forEach(category => {
 
@@ -82,14 +82,14 @@ function updateCategorySelect() {
             option.textContent = category;
 
             // Append option to select
-            transactionSubCategory.appendChild(option);
+            transactionSubCategorySelect.appendChild(option);
 
         });
 
     }
     else {
 
-        // Loop through the array for income categories
+        // Loop through the array for expense categories
         expenseCategories.forEach(category => {
 
             // Create an option element
@@ -102,7 +102,7 @@ function updateCategorySelect() {
             option.textContent = category;
 
             // Append option to select
-            transactionSubCategory.appendChild(option);
+            transactionSubCategorySelect.appendChild(option);
 
         });
     }
@@ -131,6 +131,8 @@ const filterSection = document.querySelector(".filter-section");
 // Transaction array list
 let transactions = [];
 
+let currentFilter = "all";
+
 // Get values after form submission
 transactionForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -138,7 +140,7 @@ transactionForm.addEventListener("submit", function (event) {
     const description = descriptionInput.value.trim();
     const amount = Number(amountInput.value.trim());
     const transactionType = transactionTypeSelect.value;
-    const transactionSubCategory = transactSubCategory.value;
+    const transactionSubCategorySelect = transactSubCategory.value;
     const date = dateInput.value;
 
     const transaction = {
@@ -146,59 +148,63 @@ transactionForm.addEventListener("submit", function (event) {
         description: description,
         amount: amount,
         transactionType: transactionType,
-        transactionSubCategory: transactionSubCategory,
+        transactionSubCategorySelect: transactionSubCategorySelect,
         date: date
     };
 
-
-    // Get Total Entries, Incomes & Expenses
-    const totalIncomeDisplay = document.getElementById("total-income");
-    const totalSpentDisplay = document.getElementById("total-spent");
-    const totalEntriesDisplay = document.getElementById("total-entries");
-
-    function updateTransactionSummary() {
-
-        let totalIncome = 0;
-        let totalSpent = 0;
-        let totalEntries = transactions.length;
-
-        transactions.forEach(transaction => {
-
-            if (transaction.transactionType === "income") {
-
-                totalIncome += Number(transaction.amount);
-
-            } else if (transaction.transactionType === "expenses") {
-
-                totalSpent += Number(transaction.amount);
-
-            }
-
-        });
-
-        totalEntriesDisplay.textContent = totalEntries;
-
-        totalIncomeDisplay.textContent =
-            totalIncome.toLocaleString("en-PH", {
-                style: "currency",
-                currency: "PHP"
-            });
-
-        totalSpentDisplay.textContent =
-            totalSpent.toLocaleString("en-PH", {
-                style: "currency",
-                currency: "PHP"
-            });
-
-    }
     transactions.push(transaction);
 
     displayTransactions();
-    updateTransactionSummary();
-
     transactionForm.reset();
     updateCategorySelect();
+    updateTransactionSummary();
+
 });
+
+
+// Get Total Entries, Incomes & Expenses
+const totalIncomeDisplay = document.getElementById("total-income");
+const totalSpentDisplay = document.getElementById("total-spent");
+const totalEntriesDisplay = document.getElementById("total-entries");
+
+function updateTransactionSummary() {
+
+    let totalIncome = 0;
+    let totalSpent = 0;
+    let totalEntries = transactions.length;
+
+    transactions.forEach(transaction => {
+
+        if (transaction.transactionType === "income") {
+
+            totalIncome += Number(transaction.amount);
+
+        } else if (transaction.transactionType === "expenses") {
+
+            totalSpent += Number(transaction.amount);
+
+        }
+
+    });
+
+    totalEntriesDisplay.textContent = totalEntries;
+
+    totalIncomeDisplay.textContent =
+        totalIncome.toLocaleString("en-PH", {
+            style: "currency",
+            currency: "PHP"
+        });
+
+    totalSpentDisplay.textContent =
+        totalSpent.toLocaleString("en-PH", {
+            style: "currency",
+            currency: "PHP"
+        });
+
+}
+
+
+
 
 // filter transactions dropdown based on type
 function createTransactionFilter() {
@@ -223,15 +229,15 @@ function createTransactionFilter() {
     // Filter functionality
     filterTransactionType.addEventListener("change", function () {
 
-        const selectedType = filterTransactionType.value;
+        currentFilter = filterTransactionType.value;
 
         const filteredTransactions = transactions.filter(transaction => {
 
-            if (selectedType === "all") {
+            if (currentFilter === "all") {
                 return true;
             }
 
-            return transaction.transactionType === selectedType;
+            return transaction.transactionType === currentFilter;
 
         });
 
@@ -247,7 +253,22 @@ function deleteTransaction(id) {
     transactions = transactions.filter(transaction => {
         return transaction.id !== id;
     });
-    displayTransactions();
+    
+    // Apply the current filter again
+    const filteredTransactions = transactions.filter(transaction => {
+
+        if (currentFilter === "all") {
+            return true;
+        }
+
+        return transaction.transactionType === currentFilter;
+
+    });
+
+    // Update the displayed transactions
+    displayTransactions(filteredTransactions);
+
+    updateTransactionSummary();
 }
 
 
@@ -282,15 +303,15 @@ function displayTransactions(transactionData = transactions) {
         const transactionMeta = document.createElement("div");
         transactionMeta.classList.add("transaction-meta");
 
-        const transactionSubCategory = document.createElement("span");
-        transactionSubCategory.classList.add("transaction-sub-category");
-        transactionSubCategory.textContent = `${transaction.transactionSubCategory}`;
+        const transactionSubCategorySelect = document.createElement("span");
+        transactionSubCategorySelect.classList.add("transaction-sub-category");
+        transactionSubCategorySelect.textContent = `${transaction.transactionSubCategorySelect}`;
 
         const date = document.createElement("span");
         date.classList.add("transaction-date");
         date.textContent = `${transaction.date}`;
 
-        transactionMeta.appendChild(transactionSubCategory);
+        transactionMeta.appendChild(transactionSubCategorySelect);
         transactionMeta.appendChild(date);
 
         transactionDetails.appendChild(description);
@@ -316,6 +337,7 @@ function displayTransactions(transactionData = transactions) {
         deleteBtn.addEventListener("click", function () {
             deleteTransaction(transaction.id);
         });
+
 
         const formattedAmount = Number(transaction.amount).toLocaleString("en-PH");
 

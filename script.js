@@ -8,7 +8,7 @@ fetch("sidebar.html")
 
 
 
-// Transaction options
+// Transaction type options
 const transactionTypes = [
     "Income",
     "Expenses",
@@ -18,7 +18,8 @@ const transactionTypes = [
 const transactionSelect = document.getElementById("transaction-type");
 const transactionSubCategory = document.getElementById("transaction-sub-category");
 
-// Loop through the array
+
+// Loop through the array for transaction type
 transactionTypes.forEach(type => {
 
     // Create an option element
@@ -58,14 +59,15 @@ const incomeCategories = [
     "Other"
 ];
 
-/* Get the select element */
-// Loop through the array for sub categories
+
+// Loop through the array for transaction sub categories
 function updateCategorySelect() {
     const selectedType = transactionSelect.value;
 
     // Clear previously generated options
     transactionSubCategory.innerHTML = "";
 
+    // Transaction condition depending on which transaction type
     if (selectedType === "income") {
 
         incomeCategories.forEach(category => {
@@ -125,7 +127,9 @@ const transactionList = document.querySelector(".transaction-list");
 const filterContent = document.querySelector(".filter-content");
 const filterSection = document.querySelector(".filter-section");
 
-const transactions = [];
+
+// Transaction array list
+let transactions = [];
 
 // Get values after form submission
 transactionForm.addEventListener("submit", function (event) {
@@ -138,6 +142,7 @@ transactionForm.addEventListener("submit", function (event) {
     const date = dateInput.value;
 
     const transaction = {
+        id: Date.now(),
         description: description,
         amount: amount,
         transactionType: transactionType,
@@ -146,7 +151,7 @@ transactionForm.addEventListener("submit", function (event) {
     };
 
 
-    // Total Entries, Incomes & Expenses
+    // Get Total Entries, Incomes & Expenses
     const totalIncomeDisplay = document.getElementById("total-income");
     const totalSpentDisplay = document.getElementById("total-spent");
     const totalEntriesDisplay = document.getElementById("total-entries");
@@ -195,7 +200,7 @@ transactionForm.addEventListener("submit", function (event) {
     updateCategorySelect();
 });
 
-// filter transactions based on type
+// filter transactions dropdown based on type
 function createTransactionFilter() {
 
     const filterTransactionType = document.createElement("select");
@@ -237,6 +242,14 @@ function createTransactionFilter() {
     filterContent.appendChild(filterTransactionType);
 }
 
+// Delete transaction function filter
+function deleteTransaction(id) {
+    transactions = transactions.filter(transaction => {
+        return transaction.id !== id;
+    });
+    displayTransactions();
+}
+
 
 // Display transactions in the transaction list
 function displayTransactions(transactionData = transactions) {
@@ -254,7 +267,11 @@ function displayTransactions(transactionData = transactions) {
         const transactionItem = document.createElement("div");
         transactionItem.classList.add("transaction-item");
 
-        //Left Section
+        // Item list id
+        transactionItem.dataset.id = transaction.id;
+
+
+        //Left section item list element
         const transactionDetails = document.createElement("div");
         transactionDetails.classList.add("transaction-details");
 
@@ -279,17 +296,30 @@ function displayTransactions(transactionData = transactions) {
         transactionDetails.appendChild(description);
         transactionDetails.appendChild(transactionMeta);
 
-        //Right Section
 
-        
+        //Right section item option
+        const transactionOption = document.createElement("div");
+        transactionOption.classList.add("transaction-option");
+
+
         const amount = document.createElement("p");
+        const deleteBtn = document.createElement("button");
 
         amount.classList.add("transaction-amount");
-        
+        deleteBtn.classList.add("delete-btn");
+        deleteBtn.textContent = "Delete";
+
+        transactionOption.appendChild(amount);
+        transactionOption.appendChild(deleteBtn);
+
+        // Delete each item by clicking the button
+        deleteBtn.addEventListener("click", function () {
+            deleteTransaction(transaction.id);
+        });
 
         const formattedAmount = Number(transaction.amount).toLocaleString("en-PH");
 
-
+        // Amount per item
         if (transaction.transactionType === "income") {
             amount.classList.add("income");
             amount.textContent = `+₱ ${formattedAmount}`;
@@ -300,8 +330,7 @@ function displayTransactions(transactionData = transactions) {
 
         // Append both sections
         transactionItem.appendChild(transactionDetails);
-        transactionItem.appendChild(amount);
-
+        transactionItem.appendChild(transactionOption);
         transactionList.appendChild(transactionItem);
     });
 

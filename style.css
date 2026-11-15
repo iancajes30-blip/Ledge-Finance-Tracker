@@ -293,6 +293,7 @@ span.transaction-sub-category:after {
 .filter-section {
     display: none;
 }
+
 .filter-content {
     position: relative;
     width: 100%;
@@ -328,4 +329,16 @@ span.transaction-sub-category:after {
 .transaction-option {
     display: flex;
     gap: 30px;
+}
+
+.transaction-option .delete-btn {
+    background-color: unset;
+    border: none;
+    font-size: var(--font-size);
+    color: var(--text-color);
+}
+
+.transaction-option .delete-btn:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }

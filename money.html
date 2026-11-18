@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+    <title>Ledge</title>
 </head>
 
 <body>
@@ -49,47 +49,77 @@
 
             <section class="list-content">
                 <div class="transaction-list-header">
-                <div class="summary-section">
-                    <h2>History</h2>
-                    <div class="transaction-summary">
+                    <div class="summary-section">
+                        <h2>History</h2>
+                        <div class="transaction-summary">
 
-                        <div class="summary-card">
-                            <p id="total-entries">0</p>
-                            <p>Entries</p>
+                            <div class="summary-card">
+                                <p id="total-entries">0</p>
+                                <p>Entries</p>
+
+                            </div>
+
+                            <span>·</span>
+
+                            <div class="summary-card">
+                                <p>Income</p>
+                                <p id="total-income">₱0.00</p>
+                            </div>
+
+                            <span>·</span>
+
+                            <div class="summary-card">
+                                <p>Spent</p>
+                                <p id="total-spent">₱0.00</p>
+                            </div>
 
                         </div>
-
-                        <span>·</span>
-
-                        <div class="summary-card">
-                            <p>Income</p>
-                            <p id="total-income">₱0.00</p>
+                    </div>
+                    <div class="filter-section">
+                        <div class="filter-content">
                         </div>
-
-                        <span>·</span>
-
-                        <div class="summary-card">
-                            <p>Spent</p>
-                            <p id="total-spent">₱0.00</p>
-                        </div>
-
                     </div>
                 </div>
-                <div class="filter-section">
-                    <div class="filter-content">
-                    </div>
-                </div>
-                    </div>
                 <div class="transaction-list">
                     <ul id="transactions">
                         <div class="transaction-item">
                         </div>
                     </ul>
                 </div>
+                <div class="pagination"></div>
+
             </section>
         </main>
 
     </div>
+
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal">
+
+        <div class="modal-content">
+
+            <h3>Delete Transaction?</h3>
+
+            <p>
+                Are you sure you want to delete this transaction?
+                This action cannot be undone.
+            </p>
+
+            <div class="modal-actions">
+                <button type="button" id="cancel-delete">
+                    Cancel
+                </button>
+
+                <button type="button" id="confirm-delete">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
     <script src="script.js"></script>
 
 </body>

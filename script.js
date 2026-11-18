@@ -127,11 +127,18 @@ const transactionList = document.querySelector(".transaction-list");
 const filterContent = document.querySelector(".filter-content");
 const filterSection = document.querySelector(".filter-section");
 
+const paginationContainer = document.querySelector(".pagination");
+
 
 // Transaction array list
 let transactions = [];
 
 let currentFilter = "all";
+
+// Pagination Settings
+const transactionsPerPage = 5;
+let currentPage = 1;
+
 
 // Get values after form submission
 transactionForm.addEventListener("submit", function (event) {
@@ -152,12 +159,19 @@ transactionForm.addEventListener("submit", function (event) {
         date: date
     };
 
-    transactions.push(transaction);
+    // Add the newest transaction to the beginning of the array
+    transactions.unshift(transaction);
+
+    // Return to the first page
+    currentPage = 1;
+
 
     displayTransactions();
     transactionForm.reset();
     updateCategorySelect();
     updateTransactionSummary();
+    // Refresh the transaction list
+    renderTransactions()
 
 });
 
@@ -206,10 +220,11 @@ function updateTransactionSummary() {
 
 
 
-// filter transactions dropdown based on type
+// Create transaction filter dropdown
 function createTransactionFilter() {
 
     const filterTransactionType = document.createElement("select");
+
     filterTransactionType.id = "filter-transaction-type";
     filterTransactionType.classList.add("filter-transaction-type");
 
@@ -226,35 +241,144 @@ function createTransactionFilter() {
 
     });
 
+
     // Filter functionality
     filterTransactionType.addEventListener("change", function () {
 
         currentFilter = filterTransactionType.value;
 
-        const filteredTransactions = transactions.filter(transaction => {
+        // Reset pagination when changing filters
+        currentPage = 1;
 
-            if (currentFilter === "all") {
-                return true;
-            }
-
-            return transaction.transactionType === currentFilter;
-
-        });
-
-        displayTransactions(filteredTransactions);
+        renderTransactions();
 
     });
 
     filterContent.appendChild(filterTransactionType);
+
 }
 
-// Delete transaction function filter
-function deleteTransaction(id) {
+// Delete transaction
+
+
+// Get the delete modal elements
+const deleteModal = document.getElementById("delete-modal");
+const cancelDeleteBtn = document.getElementById("cancel-delete");
+const confirmDeleteBtn = document.getElementById("confirm-delete");
+
+// Store the ID of the transaction to be deleted
+let transactionToDelete = null;
+
+
+function openDeleteModal(transactionId) {
+
+    // Store the selected transaction ID
+    transactionToDelete = transactionId;
+
+    // Display the modal
+    deleteModal.style.display = "flex";
+}
+
+
+
+function closeDeleteModal() {
+
+    deleteModal.style.display = "none";
+
+    // Reset the selected transaction
+    transactionToDelete = null;
+}
+
+
+
+function confirmDelete() {
+
+    // Find the transaction using its ID
     transactions = transactions.filter(transaction => {
-        return transaction.id !== id;
+        return transaction.id !== transactionToDelete;
     });
-    
-    // Apply the current filter again
+
+    // Update the transaction list
+    displayTransactions();
+
+    // Close the modal
+    closeDeleteModal();
+}
+
+cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+
+confirmDeleteBtn.addEventListener("click", confirmDelete);
+
+
+// Create paginations buttons
+function createPagination(totalTransactions) {
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalTransactions / transactionsPerPage);
+
+    // Clear previous pagination buttons
+    paginationContainer.innerHTML = "";
+
+    // Show pagination only if there is more 1 transaction
+    if (totalTransactions <= 1) {
+        return;
+    }
+
+    // Previous button
+    const previousButton = document.createElement("button");
+    previousButton.textContent = "Previous";
+    previousButton.disabled = currentPage === 1;
+
+    previousButton.addEventListener("click", function () {
+
+        currentPage--;
+
+        renderTransactions();
+    });
+
+    paginationContainer.appendChild(previousButton);
+
+    // Generate page number buttons
+    for (let page = 1; page <= totalPages; page++) {
+
+        const pageButton = document.createElement("button");
+
+        pageButton.textContent = page;
+
+        // Highlight the currently active page
+        if (page === currentPage) {
+            pageButton.classList.add("active");
+        }
+
+        pageButton.addEventListener("click", function () {
+            currentPage = page;
+
+            renderTransactions();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    // Next button
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.disabled = currentPage === totalPages;
+
+    nextButton.addEventListener("click", function () {
+
+        currentPage++;
+
+        renderTransactions();
+    });
+
+    paginationContainer.appendChild(nextButton);
+}
+
+
+// Render transactions with filtering and transaction type
+function renderTransactions() {
+
+
+    // Filter transaction based on the selected transaction
     const filteredTransactions = transactions.filter(transaction => {
 
         if (currentFilter === "all") {
@@ -262,25 +386,52 @@ function deleteTransaction(id) {
         }
 
         return transaction.transactionType === currentFilter;
-
     });
 
-    // Update the displayed transactions
-    displayTransactions(filteredTransactions);
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(
 
-    updateTransactionSummary();
+        filteredTransactions.length / transactionsPerPage
+    );
+
+
+    // Prevent currentPage from exceeding the avalable pages
+    if (currentPage > totalPages) {
+        currentPage = Math.max(1, totalPages);
+    }
+
+
+    // Calculate the starting and ending indexes
+    const startIndex = (currentPage - 1) * transactionsPerPage;
+    const endIndex = startIndex + transactionsPerPage;
+
+
+    // Get only the transactions for the current page
+    const displayedTransactions = filteredTransactions.slice(
+        startIndex,
+        endIndex
+    );
+
+
+    // Display the selected transactions
+    displayTransactions(displayedTransactions);
+
+
+    // Generate pagination buttons
+    createPagination(filteredTransactions.length);
+
 }
-
 
 // Display transactions in the transaction list
 function displayTransactions(transactionData = transactions) {
 
-    // Show filter only when there are 2 or more transactions
+     // Show filter only when there are 2 or more transactions
     if (transactions.length >= 2) {
         filterSection.style.display = "block";
     } else {
         filterSection.style.display = "none";
     }
+
     transactionList.innerHTML = "";
 
     transactionData.forEach(transaction => {
@@ -335,7 +486,7 @@ function displayTransactions(transactionData = transactions) {
 
         // Delete each item by clicking the button
         deleteBtn.addEventListener("click", function () {
-            deleteTransaction(transaction.id);
+            openDeleteModal(transaction.id);
         });
 
 
@@ -354,6 +505,8 @@ function displayTransactions(transactionData = transactions) {
         transactionItem.appendChild(transactionDetails);
         transactionItem.appendChild(transactionOption);
         transactionList.appendChild(transactionItem);
+
+
     });
 
 }

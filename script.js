@@ -299,15 +299,12 @@ function confirmDelete() {
     });
 
     // Update the transaction list
-    displayTransactions();
-
+    renderTransactions();
+    updateTransactionSummary();
     // Close the modal
     closeDeleteModal();
 }
 
-cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-
-confirmDeleteBtn.addEventListener("click", confirmDelete);
 
 
 // Create paginations buttons
@@ -374,6 +371,7 @@ function createPagination(totalTransactions) {
 }
 
 
+
 // Render transactions with filtering and transaction type
 function renderTransactions() {
 
@@ -425,7 +423,7 @@ function renderTransactions() {
 // Display transactions in the transaction list
 function displayTransactions(transactionData = transactions) {
 
-     // Show filter only when there are 2 or more transactions
+    // Show filter only when there are 2 or more transactions
     if (transactions.length >= 2) {
         filterSection.style.display = "block";
     } else {
@@ -483,6 +481,11 @@ function displayTransactions(transactionData = transactions) {
 
         transactionOption.appendChild(amount);
         transactionOption.appendChild(deleteBtn);
+
+
+        cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+
+        confirmDeleteBtn.addEventListener("click", confirmDelete);
 
         // Delete each item by clicking the button
         deleteBtn.addEventListener("click", function () {

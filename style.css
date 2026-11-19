@@ -209,7 +209,10 @@ header {
 .money-input {
     display: flex;
     justify-content: space-between;
+    gap: 15px;
     margin-bottom: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
 
 .list-content {
@@ -437,4 +440,39 @@ span.transaction-sub-category:after {
 .empty-state {
     text-align: center;
     margin: 20px 0;
+}
+
+
+
+/* Form group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Validation error message */
+.error-message {
+    color: #e53935;
+    font-size: 12px;
+    margin-top: 5px;
+    min-height: 16px;
+}
+
+/* Input with an error */
+.input-error {
+    border: 1px solid #e53935 !important;
+    outline: none;
+}
+
+/* Optional: focus styling */
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+}
+
+.form-fix {
+    display: flex;
+    flex-direction: column;
 }

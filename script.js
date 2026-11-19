@@ -140,9 +140,117 @@ const transactionsPerPage = 5;
 let currentPage = 1;
 
 
+// Display an error message
+function showError(input, errorElement, message) {
+    input.classList.add("input-error");
+    errorElement.textContent = message;
+}
+
+// Remove an error message
+function clearError(input, errorElement) {
+    input.classList.remove("input-error");
+    errorElement.textContent = "";
+}
+
+function validateTransactionForm() {
+
+    // Get the current values
+    const description = descriptionInput.value.trim();
+    const amount = amountInput.value.trim();
+    const transactionType = transactionTypeSelect.value;
+    const category = transactSubCategory.value;
+    const date = dateInput.value;
+
+    // Get error message elements
+    const descriptionError = document.getElementById("description-error");
+    const amountError = document.getElementById("amount-error");
+    const typeError = document.getElementById("type-error");
+    const categoryError = document.getElementById("category-error");
+    const dateError = document.getElementById("date-error");
+
+    // Clear previous errors
+    clearError(descriptionInput, descriptionError);
+    clearError(amountInput, amountError);
+    clearError(transactionTypeSelect, typeError);
+    clearError(transactSubCategory, categoryError);
+    clearError(dateInput, dateError);
+
+    let isValid = true;
+
+    // Validate description
+    if (description === "") {
+        showError(descriptionInput, descriptionError,
+            "Description is required.");
+        isValid = false;
+    }
+
+    // Validate amount
+    if (amount === "" || !Number.isFinite(Number(amount)) || Number(amount) <= 0) {
+        showError(amountInput, amountError,
+            "Amount is required.");
+        isValid = false;
+    }
+
+    // Validate transaction type
+    if (transactionType === "") {
+        showError(transactionTypeSelect, typeError,
+            "Please select a transaction type.");
+        isValid = false;
+    }
+
+    // Validate category
+    if (category === "") {
+        showError(transactSubCategory, categoryError,
+            "Please select a category.");
+        isValid = false;
+    }
+
+    // Validate date
+    if (date === "" || Number.isNaN(Date.parse(date))) {
+        showError(dateInput, dateError,
+            "Please select a valid date.");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+
+// Input fields and their corresponding error messages
+const validationFields = [
+    [descriptionInput, "description-error"],
+    [amountInput, "amount-error"],
+    [transactionTypeSelect, "type-error"],
+    [transactSubCategory, "category-error"],
+    [dateInput, "date-error"]
+];
+
+// Remove error messages when users edit their inputs
+validationFields.forEach(([input, errorId]) => {
+
+    const errorElement = document.getElementById(errorId);
+
+    input.addEventListener("input", function () {
+        clearError(input, errorElement);
+    });
+
+    input.addEventListener("change", function () {
+        clearError(input, errorElement);
+    });
+
+});
+
+
 // Get values after form submission
 transactionForm.addEventListener("submit", function (event) {
+
+
     event.preventDefault();
+
+    // Stop if validation fails
+    if (!validateTransactionForm()) {
+        return;
+    }
 
     const description = descriptionInput.value.trim();
     const amount = Number(amountInput.value.trim());
@@ -150,6 +258,8 @@ transactionForm.addEventListener("submit", function (event) {
     const transactionSubCategorySelect = transactSubCategory.value;
     const date = dateInput.value;
 
+
+    // Only create a transaction if all validations pass
     const transaction = {
         id: Date.now(),
         description: description,

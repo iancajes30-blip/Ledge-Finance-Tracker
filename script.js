@@ -382,10 +382,28 @@ function renderTransactions() {
         if (currentFilter === "all") {
             return true;
         }
-
         return transaction.transactionType === currentFilter;
+
     });
 
+    if (filteredTransactions.length === 0) {
+
+        if (currentFilter === "all") {
+
+            transactionList.innerHTML = "";
+        }
+        else {
+            transactionList.innerHTML = `
+        <div class="empty-state">
+            <h3>No ${currentFilter} has found</h3>
+            <p>You haven't recorded any ${currentFilter} yet.</p>
+        </div>
+    `;
+
+            paginationContainer.innerHTML = "";
+            return;
+        }
+    }
     // Calculate the total number of pages
     const totalPages = Math.ceil(
 
@@ -503,6 +521,7 @@ function displayTransactions(transactionData = transactions) {
             amount.classList.add("expense");
             amount.textContent = `-₱ ${formattedAmount}`;
         }
+
 
         // Append both sections
         transactionItem.appendChild(transactionDetails);

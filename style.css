@@ -433,3 +433,8 @@ span.transaction-sub-category:after {
     opacity: 0.4;
     cursor: not-allowed;
 }   
+
+.empty-state {
+    text-align: center;
+    margin: 20px 0;
+}

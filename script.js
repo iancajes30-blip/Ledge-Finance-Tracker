@@ -131,7 +131,9 @@ const paginationContainer = document.querySelector(".pagination");
 
 
 // Transaction array list
-let transactions = [];
+let transactions = JSON.parse(
+    localStorage.getItem("transactions")
+) || [];
 
 let currentFilter = "all";
 
@@ -239,7 +241,14 @@ validationFields.forEach(([input, errorId]) => {
     });
 
 });
+function saveTransactions() {
 
+    localStorage.setItem(
+        "transactions",
+        JSON.stringify(transactions)
+    );
+
+}
 
 // Get values after form submission
 transactionForm.addEventListener("submit", function (event) {
@@ -253,30 +262,28 @@ transactionForm.addEventListener("submit", function (event) {
     }
 
     const description = descriptionInput.value.trim();
-    const amount = Number(amountInput.value.trim());
+    const amount = Number(amountInput.value.replace(/,/g, "").trim());
     const transactionType = transactionTypeSelect.value;
     const transactionSubCategorySelect = transactSubCategory.value;
     const date = dateInput.value;
 
 
     // Only create a transaction if all validations pass
-    const transaction = {
+    transactions.push({
         id: Date.now(),
         description: description,
-        amount: amount,
+        amount: Number(amount),
         transactionType: transactionType,
-        transactionSubCategorySelect: transactionSubCategorySelect,
         date: date
-    };
+    });
 
     // Add the newest transaction to the beginning of the array
-    transactions.unshift(transaction);
-
     // Return to the first page
     currentPage = 1;
 
 
-    displayTransactions();
+
+    saveTransactions();
     transactionForm.reset();
     updateCategorySelect();
     updateTransactionSummary();
@@ -368,9 +375,8 @@ function createTransactionFilter() {
 
 }
 
+
 // Delete transaction
-
-
 // Get the delete modal elements
 const deleteModal = document.getElementById("delete-modal");
 const cancelDeleteBtn = document.getElementById("cancel-delete");
@@ -408,6 +414,9 @@ function confirmDelete() {
         return transaction.id !== transactionToDelete;
     });
 
+    // Save updated transactions to localStorage
+    saveTransactions();
+
     // Update the transaction list
     renderTransactions();
     updateTransactionSummary();
@@ -416,6 +425,9 @@ function confirmDelete() {
 }
 
 
+// Delete modal event listeners
+cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+confirmDeleteBtn.addEventListener("click", confirmDelete);
 
 // Create paginations buttons
 function createPagination(totalTransactions) {
@@ -427,7 +439,7 @@ function createPagination(totalTransactions) {
     paginationContainer.innerHTML = "";
 
     // Show pagination only if there is more 1 transaction
-    if (totalTransactions <= 1) {
+    if (totalPages <= 1) {
         return;
     }
 
@@ -611,9 +623,6 @@ function displayTransactions(transactionData = transactions) {
         transactionOption.appendChild(deleteBtn);
 
 
-        cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-
-        confirmDeleteBtn.addEventListener("click", confirmDelete);
 
         // Delete each item by clicking the button
         deleteBtn.addEventListener("click", function () {
@@ -642,6 +651,9 @@ function displayTransactions(transactionData = transactions) {
     });
 
 }
+// Initialize Ledge
 createTransactionFilter();
+renderTransactions();
+updateTransactionSummary();
 
 
